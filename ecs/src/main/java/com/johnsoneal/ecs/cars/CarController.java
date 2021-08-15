@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -102,5 +103,23 @@ public class CarController
             request.getNumber(), request.getSize(), list,
             request.hasPrevious(), request.hasNext());
         return ResponseEntity.ok(result);
+    }
+
+    @Operation(description = "Update a car by identifier.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Car has been updated", content = {
+            @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = CarDto.class)) }),
+        @ApiResponse(responseCode = "400", description = "Car is invalid", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Car not found", content = @Content)
+    })
+    @PutMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<CarDto> update(
+        @PathVariable("id") Long id, @Valid @RequestBody CarDto car)
+    {
+        log.info("update car id:{} car:{}", id, car);
+        Car request = mapper.map(car, Car.class);
+        Optional<Car> updated = cars.update(id, request);
+        Optional<CarDto> result = updated.map(c -> mapper.map(c, CarDto.class));
+        return ResponseEntity.of(result);
     }
 }

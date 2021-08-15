@@ -38,4 +38,16 @@ public class CarService
         PageRequest pageable = PageRequest.of(pageNumber, pageSize);
         return cars.findAll(pageable);
     }
+
+    public Optional<Car> update(Long id, Car car)
+    {
+        return cars.findById(id)
+            .map(c -> {
+                c.setMake(car.getMake());
+                c.setModel(car.getModel());
+                c.setColour(car.getColour());
+                c.setYear(car.getYear());
+                return cars.save(c);
+            });
+    }
 }
