@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,6 +59,20 @@ public class CarController
         Car created = cars.create(request);
         CarDto result = mapper.map(created, CarDto.class);
         return ResponseEntity.status(CREATED).body(result);
+    }
+
+    @Operation(summary = "Delete a Car by identifier.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Car deleted", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Car not found", content = @Content) })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id)
+    {
+        log.info("delete car {}", id);
+        Optional<Car> request = cars.delete(id);
+        return request.isPresent()
+            ? ResponseEntity.noContent().build()
+            : ResponseEntity.notFound().build();
     }
 
     @Operation(description = "Get a Car by identifier.")

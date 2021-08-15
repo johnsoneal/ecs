@@ -21,6 +21,13 @@ public class CarService
         return cars.save(car);
     }
 
+    public Optional<Car> delete(Long id)
+    {
+        Optional<Car> result = cars.findById(id);
+        result.ifPresent(c -> cars.delete(c));
+        return result;
+    }
+
     public Optional<Car> findAllById(Long id)
     {
         return cars.findById(id);
