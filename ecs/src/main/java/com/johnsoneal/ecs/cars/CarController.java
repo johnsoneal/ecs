@@ -3,7 +3,9 @@ package com.johnsoneal.ecs.cars;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -11,15 +13,18 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.johnsoneal.ecs.cars.dto.CarDto;
+import com.johnsoneal.ecs.cars.dto.CarPage;
 import com.johnsoneal.ecs.cars.dto.CreateCar;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -66,5 +71,21 @@ public class CarController
         Optional<Car> request = cars.findAllById(id);
         Optional<CarDto> result = request.map(c -> mapper.map(c, CarDto.class));
         return ResponseEntity.of(result);
+    }
+
+    @GetMapping
+    public ResponseEntity<CarPage> getPage(
+        @RequestParam(required = false, name = "page", defaultValue = "0") int page,
+        @RequestParam(required = false, name = "size", defaultValue = "20") int size)
+    {
+        // Here we are only showing a sketch of 'How to page results'.
+        Page<Car> request = cars.getPage(page, size);
+        List<CarDto> list = request.getContent().stream()
+            .map(c -> mapper.map(c, CarDto.class))
+            .collect(Collectors.toList());
+        CarPage result = new CarPage(
+            request.getNumber(), request.getSize(), list,
+            request.hasPrevious(), request.hasNext());
+        return ResponseEntity.ok(result);
     }
 }
