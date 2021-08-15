@@ -14,8 +14,8 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
-@EnableJpaRepositories("com.johnsoneal.ecs.car")
-@EntityScan("com.johnsoneal.ecs.car")
+@EnableJpaRepositories("com.johnsoneal.ecs.cars")
+@EntityScan("com.johnsoneal.ecs.cars")
 @EnableSwagger2
 @Configuration
 public class Application

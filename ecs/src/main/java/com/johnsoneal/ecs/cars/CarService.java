@@ -11,4 +11,9 @@ public class CarService
     {
         this.cars = cars;
     }
+
+    public Car create(Car car)
+    {
+        return cars.save(car);
+    }
 }
